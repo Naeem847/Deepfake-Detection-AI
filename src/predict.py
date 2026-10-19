@@ -6,6 +6,7 @@ from torchvision import transforms
 
 from .config import FAKE_IDX, IMG_SIZE, MEAN, STD, MODEL_PATH
 from .extract_frames import crop_face
+
 from .model import build_model
 
 _device = "cuda" if torch.cuda.is_available() else "cpu"

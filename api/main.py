@@ -12,6 +12,7 @@ from PIL import Image
 from src import predict
 
 app = FastAPI(title="Deepfake Detection API")
+
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 FRONTEND = Path(__file__).resolve().parent.parent / "frontend"

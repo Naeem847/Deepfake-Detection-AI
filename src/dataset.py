@@ -5,6 +5,7 @@ from .config import DATA_DIR, IMG_SIZE, MEAN, STD
 
 
 def get_transforms(train: bool):
+    
     ops = [transforms.Resize((IMG_SIZE, IMG_SIZE))]
     if train:
         ops += [transforms.RandomHorizontalFlip(), transforms.ColorJitter(0.2, 0.2, 0.2)]

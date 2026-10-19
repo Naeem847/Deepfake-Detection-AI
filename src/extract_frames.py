@@ -1,6 +1,7 @@
 """Extract face crops: raw_videos/{real,fake}/*.mp4 -> data/{train,val}/{real,fake}/*.jpg"""
 import argparse
 import random
+
 from pathlib import Path
 
 import cv2
