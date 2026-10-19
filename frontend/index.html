@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deepfake Detector</title>
+<style>
+  body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;display:flex;justify-content:center;padding:40px 16px}
+  .card{background:#1e293b;border-radius:12px;padding:28px;max-width:480px;width:100%}
+  h1{margin-top:0;font-size:1.4rem}
+  input,button{width:100%;margin-top:14px;padding:10px;border-radius:8px;border:0;font-size:1rem;box-sizing:border-box}
+  input{background:#334155;color:#e2e8f0}
+  button{background:#6366f1;color:#fff;cursor:pointer}
+  button:disabled{opacity:.5}
+  #preview{max-width:100%;margin-top:14px;border-radius:8px;display:none}
+  #result{margin-top:18px;font-size:1.1rem}
+  .fake{color:#f87171}.real{color:#4ade80}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Deepfake Detector</h1>
+  <p>Upload an image or video of a face.</p>
+  <input type="file" id="file" accept="image/*,video/*">
+  <img id="preview" alt="">
+  <button id="go">Analyze</button>
+  <div id="result"></div>
+</div>
+<script>
+const file = document.getElementById("file"), go = document.getElementById("go"),
+      out = document.getElementById("result"), prev = document.getElementById("preview");
+
+file.onchange = () => {
+  const f = file.files[0];
+  if (f && f.type.startsWith("image/")) { prev.src = URL.createObjectURL(f); prev.style.display = "block"; }
+  else prev.style.display = "none";
+};
+
+go.onclick = async () => {
+  const f = file.files[0];
+  if (!f) { out.textContent = "Choose a file first."; return; }
+  const kind = f.type.startsWith("video/") ? "video" : "image";
+  const fd = new FormData(); fd.append("file", f);
+  go.disabled = true; out.textContent = "Analyzing...";
+  try {
+    const r = await fetch(`/predict/${kind}`, { method: "POST", body: fd });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || "Request failed");
+    const pct = (d.fake_probability * 100).toFixed(1);
+    out.innerHTML = `<b class="${d.verdict.toLowerCase()}">${d.verdict}</b> — ${pct}% probability fake`;
+  } catch (e) { out.textContent = "Error: " + e.message; }
+  go.disabled = false;
+};
+</script>
+</body>
+</html>
